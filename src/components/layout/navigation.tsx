@@ -20,7 +20,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
   CANDIDATE: [
     { label: 'Dashboard', href: '/candidate/dashboard' },
     { label: 'Jobs', href: '/jobs' },
-    { label: 'Applications', href: '/applications' },
+    { label: 'Applications', href: '/candidate/applications' },
     { label: 'Notifications', href: '/notifications' },
   ],
   RECRUITER: [
