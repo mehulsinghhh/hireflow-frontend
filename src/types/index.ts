@@ -35,14 +35,21 @@ export interface Job {
   id: string;
   title: string;
   description: string;
-  requirements?: string;
   location?: string;
-  salary?: string;
-  type?: string;
   companyId: string;
   company?: Company;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface JobsResponse {
+  jobs: Job[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface Application {

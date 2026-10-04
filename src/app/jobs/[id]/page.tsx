@@ -6,7 +6,6 @@ import { jobsService } from '@/services/jobs';
 import { Job } from '@/types';
 import { useAuth } from '@/hooks/use-auth';
 import { ApiError } from '@/lib/api';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -163,7 +162,6 @@ export default function JobDetailPage({
                       </p>
                     )}
                   </div>
-                  {job.type && <Badge variant="info">{job.type}</Badge>}
                 </div>
 
                 <div className="flex items-center gap-4 text-xs font-medium text-slate-500 border-y border-slate-100 py-3 flex-wrap">
@@ -192,25 +190,6 @@ export default function JobDetailPage({
                     </span>
                   )}
 
-                  {job.salary && (
-                    <span className="flex items-center gap-1 font-semibold text-slate-700">
-                      <svg
-                        className="w-4 h-4 text-emerald-600"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      {job.salary}
-                    </span>
-                  )}
-
                   {job.createdAt && (
                     <span className="text-slate-400">
                       Posted {new Date(job.createdAt).toLocaleDateString()}
@@ -226,17 +205,6 @@ export default function JobDetailPage({
                     {job.description}
                   </p>
                 </div>
-
-                {job.requirements && (
-                  <div className="space-y-2 pt-4 border-t border-slate-100">
-                    <h3 className="text-sm font-semibold text-slate-900">
-                      Requirements & Qualifications
-                    </h3>
-                    <p className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">
-                      {job.requirements}
-                    </p>
-                  </div>
-                )}
               </div>
             </CardContent>
           </Card>

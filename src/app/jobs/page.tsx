@@ -1,24 +1,23 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { jobsService } from '@/services/jobs';
-import { Job } from '@/types';
-import { Badge } from '@/components/ui/badge';
+import { JobsResponse } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 export default function JobsPage() {
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [jobsData, setJobsData] = useState<JobsResponse | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchJobs = async () => {
+  const fetchJobs = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
       const data = await jobsService.getAll();
-      setJobs(data);
+      setJobsData(data);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : 'Failed to load jobs. Please try again.'
@@ -26,7 +25,7 @@ export default function JobsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -34,8 +33,7 @@ export default function JobsPage() {
       .getAll()
       .then((data) => {
         if (isMounted) {
-          setJobs(data);
-          setIsLoading(false);
+          setJobsData(data);
         }
       })
       .catch((err) => {
@@ -43,6 +41,10 @@ export default function JobsPage() {
           setError(
             err instanceof Error ? err.message : 'Failed to load jobs. Please try again.'
           );
+        }
+      })
+      .finally(() => {
+        if (isMounted) {
           setIsLoading(false);
         }
       });
@@ -51,6 +53,8 @@ export default function JobsPage() {
       isMounted = false;
     };
   }, []);
+
+  const jobs = jobsData?.jobs || [];
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6">
@@ -126,7 +130,6 @@ export default function JobsPage() {
                       >
                         {job.title}
                       </Link>
-                      {job.type && <Badge variant="info">{job.type}</Badge>}
                     </div>
 
                     <div className="flex items-center gap-4 text-xs font-medium text-slate-500 flex-wrap">
@@ -174,22 +177,9 @@ export default function JobsPage() {
                         </span>
                       )}
 
-                      {job.salary && (
-                        <span className="flex items-center gap-1 font-semibold text-slate-700">
-                          <svg
-                            className="w-3.5 h-3.5 text-emerald-600"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth="2"
-                              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                            />
-                          </svg>
-                          {job.salary}
+                      {job.createdAt && (
+                        <span className="text-slate-400">
+                          Posted {new Date(job.createdAt).toLocaleDateString()}
                         </span>
                       )}
                     </div>
