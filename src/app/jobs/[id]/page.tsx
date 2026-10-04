@@ -279,7 +279,7 @@ export default function JobDetailPage({
                   <div className="space-y-3 p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-md text-xs">
                     <p className="font-semibold">Application Submitted!</p>
                     <p>Your application has been received successfully.</p>
-                    <Link href="/candidate/applications" className="inline-block mt-2">
+                    <Link href="/candidate/applications" className="inline-block mt-2 w-full">
                       <Button variant="outline" size="sm" className="w-full text-xs">
                         View My Applications
                       </Button>

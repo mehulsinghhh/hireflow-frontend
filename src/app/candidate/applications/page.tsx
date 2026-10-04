@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ProtectedRoute } from '@/components/auth/protected-route';
 import { applicationsService } from '@/services/applications';
@@ -25,7 +25,7 @@ export default function CandidateApplicationsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchApplications = useCallback(async () => {
+  const fetchApplications = async () => {
     setIsLoading(true);
     setError(null);
     try {
@@ -38,7 +38,7 @@ export default function CandidateApplicationsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     let isMounted = true;
