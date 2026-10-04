@@ -69,9 +69,28 @@ export interface Notification {
   updatedAt?: string;
 }
 
-export interface AuthResponse {
-  user: User;
+export interface RegisterResponse {
+  id: string;
+  email: string;
+  role: UserRole;
+  createdAt: string;
+}
+
+export interface LoginResponse {
+  user: {
+    id: string;
+    email: string;
+    role: UserRole;
+  };
   token: string;
+}
+
+export interface MeResponse {
+  message: string;
+  user: {
+    userId: string;
+    role: UserRole;
+  };
 }
 
 export interface LoginCredentials {

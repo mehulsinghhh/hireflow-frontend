@@ -3,14 +3,14 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { authStorage } from '@/lib/auth';
 import { authService } from '@/services/auth';
-import { LoginCredentials, RegisterCredentials, User } from '@/types';
+import { LoginCredentials, RegisterCredentials, RegisterResponse, User } from '@/types';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
-  register: (data: RegisterCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials) => Promise<User>;
+  register: (data: RegisterCredentials) => Promise<RegisterResponse>;
   logout: () => void;
   refreshUser: () => Promise<void>;
 }
@@ -29,9 +29,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      const me = await authService.getMe();
-      setUser(me);
-      authStorage.setUser(me);
+      const meRes = await authService.getMe();
+      const existingUser = authStorage.getUser();
+
+      const updatedUser: User = {
+        id: meRes.user.userId,
+        email: existingUser?.email || '',
+        name: existingUser?.name,
+        role: meRes.user.role,
+      };
+
+      setUser(updatedUser);
+      authStorage.setUser(updatedUser);
     } catch {
       authStorage.clearAuth();
       setUser(null);
@@ -46,28 +55,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
   }, [refreshUser]);
 
-  const login = async (credentials: LoginCredentials) => {
+  const login = async (credentials: LoginCredentials): Promise<User> => {
     setIsLoading(true);
     try {
       const res = await authService.login(credentials);
+      const authenticatedUser: User = {
+        id: res.user.id,
+        email: res.user.email,
+        role: res.user.role,
+      };
       authStorage.setToken(res.token);
-      authStorage.setUser(res.user);
-      setUser(res.user);
+      authStorage.setUser(authenticatedUser);
+      setUser(authenticatedUser);
+      return authenticatedUser;
     } finally {
       setIsLoading(false);
     }
   };
 
-  const register = async (data: RegisterCredentials) => {
-    setIsLoading(true);
-    try {
-      const res = await authService.register(data);
-      authStorage.setToken(res.token);
-      authStorage.setUser(res.user);
-      setUser(res.user);
-    } finally {
-      setIsLoading(false);
-    }
+  const register = async (data: RegisterCredentials): Promise<RegisterResponse> => {
+    return authService.register(data);
   };
 
   const logout = () => {
