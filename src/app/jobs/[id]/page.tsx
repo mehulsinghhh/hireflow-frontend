@@ -3,6 +3,7 @@
 import React, { useEffect, useState, use } from 'react';
 import Link from 'next/link';
 import { jobsService } from '@/services/jobs';
+import { applicationsService } from '@/services/applications';
 import { Job } from '@/types';
 import { useAuth } from '@/hooks/use-auth';
 import { ApiError } from '@/lib/api';
@@ -21,6 +22,9 @@ export default function JobDetailPage({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [isNotFound, setIsNotFound] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [applicationSubmitted, setApplicationSubmitted] = useState(false);
+  const [applicationError, setApplicationError] = useState<string | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -52,6 +56,32 @@ export default function JobDetailPage({
       isMounted = false;
     };
   }, [id]);
+
+  const handleApply = async () => {
+    if (!job || user?.role !== 'CANDIDATE' || isSubmitting || applicationSubmitted) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setApplicationError(null);
+
+    try {
+      await applicationsService.create({ jobId: job.id });
+      setApplicationSubmitted(true);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 409) {
+        setApplicationError('Already Applied');
+      } else {
+        setApplicationError(
+          err instanceof Error
+            ? err.message
+            : 'Unable to submit your application. Please try again.'
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -236,12 +266,39 @@ export default function JobDetailPage({
                 </div>
               ) : user?.role === 'CANDIDATE' ? (
                 <div className="space-y-3">
-                  <p className="text-xs text-slate-600">
-                    Application submission flow is coming soon.
-                  </p>
-                  <Button variant="primary" size="md" className="w-full" disabled>
-                    Apply Now (Coming Soon)
-                  </Button>
+                  {applicationSubmitted ? (
+                    <>
+                      <p className="text-sm font-medium text-emerald-700">
+                        Application submitted successfully.
+                      </p>
+                      <Link href="/candidate/applications" className="block">
+                        <Button variant="outline" size="md" className="w-full">
+                          View My Applications
+                        </Button>
+                      </Link>
+                    </>
+                  ) : applicationError === 'Already Applied' ? (
+                    <p className="text-sm font-medium text-amber-700">
+                      Already Applied
+                    </p>
+                  ) : (
+                    <>
+                      {applicationError && (
+                        <p className="text-xs text-red-700" role="alert">
+                          {applicationError}
+                        </p>
+                      )}
+                      <Button
+                        variant="primary"
+                        size="md"
+                        className="w-full"
+                        onClick={handleApply}
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? 'Submitting...' : 'Apply Now'}
+                      </Button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <p className="text-xs text-slate-500">

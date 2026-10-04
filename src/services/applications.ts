@@ -3,8 +3,6 @@ import { Application, ApplicationStatus } from '@/types';
 
 export interface CreateApplicationInput {
   jobId: string;
-  resumeUrl?: string;
-  coverLetter?: string;
 }
 
 export const applicationsService = {

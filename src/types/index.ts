@@ -55,14 +55,31 @@ export interface JobsResponse {
 export interface Application {
   id: string;
   jobId: string;
-  job?: Job;
   candidateId: string;
-  candidate?: User;
   status: ApplicationStatus;
-  resumeUrl?: string;
-  coverLetter?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  candidate: {
+    id: string;
+    email: string;
+    role: UserRole;
+  };
+  job: {
+    id: string;
+    title: string;
+    description: string;
+    location: string;
+    companyId: string;
+    company: {
+      id: string;
+      name: string;
+      description: string | null;
+      createdAt: string;
+      updatedAt: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+  };
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Notification {
