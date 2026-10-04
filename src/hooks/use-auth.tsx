@@ -41,39 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    let isMounted = true;
-    const token = authStorage.getToken();
-    if (!token) {
-      Promise.resolve().then(() => {
-        if (isMounted) setIsLoading(false);
-      });
-      return;
-    }
-
-    authService
-      .getMe()
-      .then((me) => {
-        if (isMounted) {
-          setUser(me);
-          authStorage.setUser(me);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          authStorage.clearAuth();
-          setUser(null);
-        }
-      })
-      .finally(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+    queueMicrotask(() => {
+      void refreshUser();
+    });
+  }, [refreshUser]);
 
   const login = async (credentials: LoginCredentials) => {
     setIsLoading(true);

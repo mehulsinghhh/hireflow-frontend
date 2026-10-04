@@ -76,12 +76,10 @@ export interface AuthResponse {
 
 export interface LoginCredentials {
   email: string;
-  password?: string;
+  password: string;
 }
 
 export interface RegisterCredentials {
   email: string;
-  password?: string;
-  name?: string;
-  role?: UserRole;
+  password: string;
 }

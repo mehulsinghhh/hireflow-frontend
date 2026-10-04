@@ -91,13 +91,6 @@ export const api = {
       body: JSON.stringify(body),
     }),
 
-  put: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
-    apiRequest<T>(endpoint, {
-      ...options,
-      method: 'PUT',
-      body: JSON.stringify(body),
-    }),
-
   patch: <T>(endpoint: string, body?: unknown, options?: RequestOptions) =>
     apiRequest<T>(endpoint, {
       ...options,

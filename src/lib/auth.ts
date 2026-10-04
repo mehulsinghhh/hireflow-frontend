@@ -1,3 +1,5 @@
+import { User } from '@/types';
+
 const TOKEN_KEY = 'hireflow_token';
 const USER_KEY = 'hireflow_user';
 
@@ -12,18 +14,18 @@ export const authStorage = {
     localStorage.setItem(TOKEN_KEY, token);
   },
 
-  getUser: (): unknown | null => {
+  getUser: (): User | null => {
     if (typeof window === 'undefined') return null;
     const userStr = localStorage.getItem(USER_KEY);
     if (!userStr) return null;
     try {
-      return JSON.parse(userStr);
+      return JSON.parse(userStr) as User;
     } catch {
       return null;
     }
   },
 
-  setUser: (user: unknown): void => {
+  setUser: (user: User): void => {
     if (typeof window === 'undefined') return;
     localStorage.setItem(USER_KEY, JSON.stringify(user));
   },
