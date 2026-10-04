@@ -12,22 +12,26 @@ interface NavItem {
   href: string;
 }
 
+const PUBLIC_NAV_ITEMS: NavItem[] = [
+  { label: 'Jobs', href: '/jobs' },
+];
+
 const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
   CANDIDATE: [
-    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Dashboard', href: '/candidate/dashboard' },
     { label: 'Jobs', href: '/jobs' },
     { label: 'Applications', href: '/applications' },
     { label: 'Notifications', href: '/notifications' },
   ],
   RECRUITER: [
-    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Dashboard', href: '/recruiter/dashboard' },
     { label: 'Jobs', href: '/jobs' },
     { label: 'Applicants', href: '/applicants' },
     { label: 'Companies', href: '/companies' },
     { label: 'Notifications', href: '/notifications' },
   ],
   ADMIN: [
-    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Dashboard', href: '/admin/dashboard' },
     { label: 'Jobs', href: '/jobs' },
     { label: 'Companies', href: '/companies' },
     { label: 'Applications', href: '/applications' },
@@ -40,7 +44,7 @@ export const Navigation: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { unreadCount } = useNotifications();
 
-  const navItems = user?.role ? ROLE_NAV_ITEMS[user.role] : [];
+  const navItems = isAuthenticated && user?.role ? ROLE_NAV_ITEMS[user.role] : PUBLIC_NAV_ITEMS;
 
   return (
     <header className="bg-white border-b border-slate-200">
@@ -51,33 +55,31 @@ export const Navigation: React.FC = () => {
               Hire<span className="text-blue-600">Flow</span>
             </Link>
 
-            {isAuthenticated && (
-              <nav className="hidden md:flex items-center gap-1">
-                {navItems.map((item) => {
-                  const isActive = pathname === item.href;
-                  const isNotifications = item.href === '/notifications';
+            <nav className="hidden md:flex items-center gap-1">
+              {navItems.map((item) => {
+                const isActive = pathname === item.href;
+                const isNotifications = item.href === '/notifications';
 
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                        isActive
-                          ? 'bg-slate-100 text-blue-600'
-                          : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
-                      }`}
-                    >
-                      {item.label}
-                      {isNotifications && unreadCount > 0 && (
-                        <span className="ml-1.5 px-1.5 py-0.5 text-xs font-semibold bg-blue-600 text-white rounded-full">
-                          {unreadCount}
-                        </span>
-                      )}
-                    </Link>
-                  );
-                })}
-              </nav>
-            )}
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-slate-100 text-blue-600'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                    }`}
+                  >
+                    {item.label}
+                    {isNotifications && unreadCount > 0 && (
+                      <span className="ml-1.5 px-1.5 py-0.5 text-xs font-semibold bg-blue-600 text-white rounded-full">
+                        {unreadCount}
+                      </span>
+                    )}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
           <div className="flex items-center gap-4">
@@ -89,7 +91,7 @@ export const Navigation: React.FC = () => {
                 </div>
                 <button
                   onClick={logout}
-                  className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors"
+                  className="px-3 py-1.5 text-xs font-medium text-slate-600 border border-slate-300 rounded-md hover:bg-slate-50 transition-colors cursor-pointer"
                 >
                   Logout
                 </button>

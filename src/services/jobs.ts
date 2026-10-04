@@ -1,21 +1,18 @@
 import { api } from '@/lib/api';
-import { Application, Job } from '@/types';
+import { Application, Job, JobsResponse } from '@/types';
 
 export interface CreateJobInput {
   title: string;
   description: string;
-  requirements?: string;
   location?: string;
-  salary?: string;
-  type?: string;
   companyId: string;
 }
 
 export type UpdateJobInput = Partial<CreateJobInput>;
 
 export const jobsService = {
-  getAll: (params?: Record<string, string | number | boolean>): Promise<Job[]> => {
-    return api.get<Job[]>('/api/jobs', { params });
+  getAll: (params?: Record<string, string | number | boolean>): Promise<JobsResponse> => {
+    return api.get<JobsResponse>('/api/jobs', { params });
   },
 
   getById: (id: string): Promise<Job> => {
