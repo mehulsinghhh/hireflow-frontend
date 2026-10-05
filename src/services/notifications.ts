@@ -1,13 +1,15 @@
 import { api } from '@/lib/api';
-import { Notification } from '@/types';
+import { Notification, NotificationsResponse } from '@/types';
 
 export interface UnreadCountResponse {
   count: number;
 }
 
 export const notificationsService = {
-  getAll: (): Promise<Notification[]> => {
-    return api.get<Notification[]>('/api/notifications');
+  getAll: (page = 1, limit = 20): Promise<NotificationsResponse> => {
+    return api.get<NotificationsResponse>('/api/notifications', {
+      params: { page, limit },
+    });
   },
 
   getUnreadCount: (): Promise<UnreadCountResponse> => {

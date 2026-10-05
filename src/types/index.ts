@@ -81,13 +81,21 @@ export interface Application {
 
 export interface Notification {
   id: string;
-  userId: string;
   type: NotificationType;
   message: string;
-  isRead: boolean;
-  data?: Record<string, unknown>;
-  createdAt?: string;
-  updatedAt?: string;
+  applicationId: string;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface NotificationsResponse {
+  notifications: Notification[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
 }
 
 export interface RegisterResponse {

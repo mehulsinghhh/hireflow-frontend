@@ -22,7 +22,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Dashboard', href: '/candidate/dashboard' },
     { label: 'Jobs', href: '/jobs' },
     { label: 'Applications', href: '/candidate/applications' },
-    { label: 'Notifications', href: '/notifications' },
+    { label: 'Notifications', href: '/candidate/notifications' },
   ],
   RECRUITER: [
     { label: 'Dashboard', href: '/recruiter/dashboard' },
@@ -43,7 +43,10 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
 export const Navigation: React.FC = () => {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotifications({
+    fetchNotifications: false,
+    fetchUnreadCount: true,
+  });
 
   const navItems = isAuthenticated && user?.role ? ROLE_NAV_ITEMS[user.role] : PUBLIC_NAV_ITEMS;
 
@@ -59,7 +62,7 @@ export const Navigation: React.FC = () => {
             <nav className="hidden md:flex items-center gap-1">
               {navItems.map((item) => {
                 const isActive = pathname === item.href;
-                const isNotifications = item.href === '/notifications';
+                const isNotifications = item.href === '/candidate/notifications';
 
                 return (
                   <Link
