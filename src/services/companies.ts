@@ -4,9 +4,6 @@ import { Company } from '@/types';
 export interface CreateCompanyInput {
   name: string;
   description?: string;
-  website?: string;
-  location?: string;
-  logoUrl?: string;
 }
 
 export type UpdateCompanyInput = Partial<CreateCompanyInput>;
