@@ -14,6 +14,7 @@ interface NavItem {
 
 const PUBLIC_NAV_ITEMS: NavItem[] = [
   { label: 'Jobs', href: '/jobs' },
+  { label: 'Companies', href: '/companies' },
 ];
 
 const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {

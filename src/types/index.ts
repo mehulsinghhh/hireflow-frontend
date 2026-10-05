@@ -23,12 +23,9 @@ export interface User {
 export interface Company {
   id: string;
   name: string;
-  description?: string;
-  website?: string;
-  location?: string;
-  logoUrl?: string;
-  createdAt?: string;
-  updatedAt?: string;
+  description: string | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Job {
