@@ -7,6 +7,8 @@ export type ApplicationStatus =
   | 'REJECTED'
   | 'HIRED';
 
+export type ApplicationStatusChange = Exclude<ApplicationStatus, 'APPLIED'>;
+
 export type NotificationType =
   | 'APPLICATION_CREATED'
   | 'APPLICATION_STATUS_CHANGED';

@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { Application, ApplicationStatus } from '@/types';
+import { Application, ApplicationStatusChange } from '@/types';
 
 export interface CreateApplicationInput {
   jobId: string;
@@ -28,7 +28,7 @@ export const applicationsService = {
 
   updateStatus: (
     id: string,
-    status: ApplicationStatus
+    status: ApplicationStatusChange
   ): Promise<Application> => {
     return api.patch<Application>(`/api/applications/${id}/status`, { status });
   },
