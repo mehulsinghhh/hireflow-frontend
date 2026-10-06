@@ -4,11 +4,15 @@ import { Application, Job, JobsResponse } from '@/types';
 export interface CreateJobInput {
   title: string;
   description: string;
-  location?: string;
+  location: string;
   companyId: string;
 }
 
-export type UpdateJobInput = Partial<CreateJobInput>;
+export interface UpdateJobInput {
+  title?: string;
+  description?: string;
+  location?: string;
+}
 
 export const jobsService = {
   getAll: (params?: Record<string, string | number | boolean>): Promise<JobsResponse> => {

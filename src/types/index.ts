@@ -32,7 +32,7 @@ export interface Job {
   id: string;
   title: string;
   description: string;
-  location?: string;
+  location: string;
   companyId: string;
   company?: Company;
   createdAt?: string;
