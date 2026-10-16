@@ -162,8 +162,8 @@ export default function AdminDashboardPage() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link href="/jobs"><Button size="sm">Manage Jobs</Button></Link>
-            <Link href="/companies"><Button variant="outline" size="sm">Manage Companies</Button></Link>
+            <Link href="/admin/jobs"><Button size="sm">Manage Jobs</Button></Link>
+            <Link href="/admin/companies"><Button variant="outline" size="sm">Manage Companies</Button></Link>
           </div>
         </div>
 
@@ -225,10 +225,10 @@ export default function AdminDashboardPage() {
               <Card>
                 <CardHeader><CardTitle>Management areas</CardTitle></CardHeader>
                 <CardContent className="space-y-3">
-                  <Link href="/jobs" className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:border-blue-300 hover:text-blue-600">
+                  <Link href="/admin/jobs" className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:border-blue-300 hover:text-blue-600">
                     Jobs <span aria-hidden="true">-&gt;</span>
                   </Link>
-                  <Link href="/companies" className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:border-blue-300 hover:text-blue-600">
+                  <Link href="/admin/companies" className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:border-blue-300 hover:text-blue-600">
                     Companies <span aria-hidden="true">-&gt;</span>
                   </Link>
                   <p className="pt-1 text-xs text-slate-500">Application management is not available as a frontend route yet.</p>
