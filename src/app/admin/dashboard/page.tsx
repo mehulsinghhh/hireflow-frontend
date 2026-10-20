@@ -231,7 +231,9 @@ export default function AdminDashboardPage() {
                   <Link href="/admin/companies" className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:border-blue-300 hover:text-blue-600">
                     Companies <span aria-hidden="true">-&gt;</span>
                   </Link>
-                  <p className="pt-1 text-xs text-slate-500">Application management is not available as a frontend route yet.</p>
+                  <Link href="/admin/applications" className="flex items-center justify-between rounded-md border border-slate-200 p-3 text-sm font-medium text-slate-700 hover:border-blue-300 hover:text-blue-600">
+                    Applications <span aria-hidden="true">-&gt;</span>
+                  </Link>
                 </CardContent>
               </Card>
             </div>

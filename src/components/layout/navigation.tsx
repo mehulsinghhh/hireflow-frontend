@@ -35,7 +35,7 @@ const ROLE_NAV_ITEMS: Record<UserRole, NavItem[]> = {
     { label: 'Dashboard', href: '/admin/dashboard' },
     { label: 'Jobs', href: '/admin/jobs' },
     { label: 'Companies', href: '/admin/companies' },
-    { label: 'Applications', href: '/applications' },
+    { label: 'Applications', href: '/admin/applications' },
     { label: 'Notifications', href: '/notifications' },
   ],
 };
