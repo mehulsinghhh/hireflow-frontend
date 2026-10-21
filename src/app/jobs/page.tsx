@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { jobsService } from '@/services/jobs';
 import { JobsResponse } from '@/types';
@@ -9,52 +9,86 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export default function JobsPage() {
   const [jobsData, setJobsData] = useState<JobsResponse | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [retryCount, setRetryCount] = useState(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-
-  const fetchJobs = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const data = await jobsService.getAll();
-      setJobsData(data);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Failed to load jobs. Please try again.'
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const requestRef = useRef<{
+    key: string;
+    promise: Promise<JobsResponse>;
+  } | null>(null);
 
   useEffect(() => {
-    let isMounted = true;
-    jobsService
-      .getAll()
+    const requestKey = `${currentPage}:${retryCount}`;
+    const existingRequest = requestRef.current;
+    const request =
+      existingRequest?.key === requestKey
+        ? existingRequest.promise
+        : jobsService.getAll({ page: currentPage, limit: 10 });
+
+    requestRef.current = { key: requestKey, promise: request };
+    let isCurrent = true;
+    let shouldRefetch = false;
+
+    request
       .then((data) => {
-        if (isMounted) {
-          setJobsData(data);
+        if (!isCurrent || requestRef.current?.promise !== request) {
+          return;
         }
+
+        const totalPages = data.pagination.totalPages;
+        const effectivePage =
+          totalPages > 0 ? Math.min(Math.max(data.pagination.page, 1), totalPages) : 1;
+        if (effectivePage !== currentPage) {
+          shouldRefetch = true;
+          setIsLoading(true);
+          setError(null);
+          setCurrentPage(effectivePage);
+          return;
+        }
+        setJobsData(data);
       })
       .catch((err) => {
-        if (isMounted) {
-          setError(
-            err instanceof Error ? err.message : 'Failed to load jobs. Please try again.'
-          );
+        if (isCurrent && requestRef.current?.promise === request) {
+          setError(err instanceof Error ? err.message : 'Failed to load jobs. Please try again.');
         }
       })
       .finally(() => {
-        if (isMounted) {
+        if (isCurrent && !shouldRefetch && requestRef.current?.promise === request) {
           setIsLoading(false);
         }
       });
 
     return () => {
-      isMounted = false;
+      isCurrent = false;
     };
-  }, []);
+  }, [currentPage, retryCount]);
 
   const jobs = jobsData?.jobs || [];
+  const totalPages = jobsData?.pagination.totalPages || 0;
+  const totalJobs = jobsData?.pagination.total || 0;
+  const activePage = jobsData?.pagination.page || currentPage;
+  const pageLimit = jobsData?.pagination.limit || 10;
+  const firstJob = totalJobs === 0 ? 0 : (activePage - 1) * pageLimit + 1;
+  const lastJob = Math.min(activePage * pageLimit, totalJobs);
+  const changePage = (page: number) => {
+    setError(null);
+    setIsLoading(true);
+    setCurrentPage(page);
+  };
+  const retry = () => {
+    setError(null);
+    setIsLoading(true);
+    setRetryCount((count) => count + 1);
+  };
+  const pageNumbers: (number | 'ellipsis')[] =
+    totalPages <= 7
+      ? Array.from({ length: totalPages }, (_, index) => index + 1)
+      : activePage <= 4
+        ? [1, 2, 3, 4, 5, 'ellipsis', totalPages]
+        : activePage >= totalPages - 3
+          ? [1, 'ellipsis', totalPages - 4, totalPages - 3, totalPages - 2, totalPages - 1, totalPages]
+          : [1, 'ellipsis', activePage - 1, activePage, activePage + 1, 'ellipsis', totalPages];
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 sm:px-6">
@@ -97,7 +131,7 @@ export default function JobsPage() {
         <Card className="p-6 text-center border-red-200 bg-red-50">
           <CardContent className="pt-4">
             <p className="text-red-700 text-sm font-medium mb-4">{error}</p>
-            <Button variant="outline" size="sm" onClick={fetchJobs}>
+            <Button variant="outline" size="sm" onClick={retry}>
               Try Again
             </Button>
           </CardContent>
@@ -200,6 +234,52 @@ export default function JobsPage() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {!isLoading && !error && totalPages > 0 && (
+        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-between">
+          <p className="text-sm text-slate-500">
+            Showing {firstJob}–{lastJob} of {totalJobs} jobs
+          </p>
+          {totalPages > 1 && (
+            <nav className="flex items-center gap-1" aria-label="Jobs pagination">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isLoading || activePage === 1}
+                onClick={() => changePage(Math.max(1, activePage - 1))}
+              >
+                Previous
+              </Button>
+              {pageNumbers.map((page, index) =>
+                page === 'ellipsis' ? (
+                  <span key={`ellipsis-${index}`} className="px-2 text-sm text-slate-500">
+                    …
+                  </span>
+                ) : (
+                  <Button
+                    key={page}
+                    variant={page === activePage ? 'primary' : 'ghost'}
+                    size="sm"
+                    aria-current={page === activePage ? 'page' : undefined}
+                    disabled={isLoading}
+                    onClick={() => changePage(page)}
+                  >
+                    {page}
+                  </Button>
+                )
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isLoading || activePage === totalPages}
+                onClick={() => changePage(Math.min(totalPages, activePage + 1))}
+              >
+                Next
+              </Button>
+            </nav>
+          )}
         </div>
       )}
     </div>
