@@ -19,6 +19,12 @@ export const jobsService = {
     return api.get<JobsResponse>('/api/jobs', { params });
   },
 
+  getMyJobs: (page: number, limit: number): Promise<JobsResponse> => {
+    return api.get<JobsResponse>('/api/jobs/my-jobs', {
+      params: { page, limit },
+    });
+  },
+
   getById: (id: string): Promise<Job> => {
     return api.get<Job>(`/api/jobs/${id}`);
   },
